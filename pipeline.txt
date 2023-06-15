@@ -1,0 +1,64 @@
+Datasets:
+
+Genomic:
+-	Local dataset
+-	Global dataset (2021)
+-	Global dataset (2022)
+
+Expected versus non-permitted lineage assignments between each pangolin version:
+	-	expected.13.14.tsv;
+	-	expected.14.15.tsv;
+	-	expected.15.16.tsv;
+	-	expected.2021-11-09_v1.2.133.tsv
+
+Lineage Assignments:
+
+-	Pangolin v.3/pango designation v1.2.76-93
+
+	-	pangolin v.3.1.13
+	-	pangolin v.3.1.14
+	-	pangolin v.3.1.15
+	-	pangolin v.3.1.16
+	*pangoLEARN uses a decision tree model
+	Command line:  pangolin <samples.fasta> --skip-designation-hash --max-ambig .99 --min-length 1 --outfile <pango_nohash.csv> 
+		       pangolin <samples.fasta> --skip-designation-hash --max-ambig .99 --min-length 1 --usher --outfile <usher_nohash.csv>
+
+-	Pangolin v.4.0.2
+
+	-	pangolin-data v1.2.133
+
+	*pangoLEARN uses a random forest model
+	Command line:   pangolin <samples.fasta> --skip-designation-cache --max-ambig .99 --min-length 1 --analysis-mode pangolearn --outfile <pangov4_nohash.csv> 
+			pangolin <samples.fasta> --skip-designation-cache --max-ambig .99 --min-length 1 --analysis-mode usher --outfile <usherv4_nohash.csv> 
+
+Alternate lineage assignment:
+
+-	Align to reference
+	-	MAFFT:
+	Command line:  mafft --anysymbol --keeplength --6merpair --addfragments <samples.fasta> <MN908947.3_coronavirus_wuhan_nCov19-refseq.fasta> 
+
+-	Lineage assignment:
+	-	MAPLE:
+	Command line: pypy3 MAPLEv0.1.9.py --inputTree outputMaple_binary_tree.tree --assignmentFile ref.csv --output MAPLE019 --overwrite
+
+Lineage Assignment Validation:
+
+-	Adjusted Rand Index:
+	Script: adjusted_rand.R
+
+-	Ancestral accuracy:
+	Script: compareLineages.py
+
+Pangolin versions lineage assignment comparison (Assignment comparisons):
+
+-	Lineage assignment consistency:
+	-	SNP Distance:
+	snp-dists v.0.8.2
+	Script: snp_scorpio-comparisons.sh, snp_scorpio-comparisons.Rmd
+
+-	Stability comparison:
+	-	Expected vs. non-expected
+	Script: violin_plots.R
+
+	-	Sankey Plots:
+	Script: sankey_plots.R
