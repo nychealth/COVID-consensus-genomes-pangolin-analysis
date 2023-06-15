@@ -24,6 +24,11 @@ Script files:
 * snp_scorpio-comparisons.Rmd - R script to analyze SNP distance matrix data and scorpio
 * violin_plots.R - R script to create visualization to compare genome coverage to reassignment
 * sankey_plots.R - R script to create visualization to look at lineage stability
+* Files catalogueing new lineages during the study periodbetween pangolin versions which we considered as permitted changes
+  - expected.13.14.tsv
+  - expected.14.15.tsv 
+  - expected.15.16.tsv 
+  - expected.2021-11-09_v1.2.133.tsv
 
 
 # Authors
