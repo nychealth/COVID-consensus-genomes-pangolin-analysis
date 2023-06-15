@@ -21,7 +21,7 @@ Script files:
 * adjusted_rand.R - R script to compute Adjusted Rand Index
 * compareLineages.py - Python script to compare pangolin lineages to MAPLE tree
 * snp_scorpio-comparisons.sh - Bash script to preprocess SNP distance matrix
-* snp_scorpio-comparisons.Rmd - Script to analyze SNP distance matrix data and scorpio
+* snp_scorpio-comparisons.Rmd - R script to analyze SNP distance matrix data and scorpio
 * violin_plots.R - R script to create visualization to compare genome coverage to reassignment
 * sankey_plots.R - R script to create visualization to look at lineage stability
 
