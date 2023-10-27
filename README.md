@@ -21,17 +21,26 @@ Fasta files can be directly inputted into any software that takes multi-fasta fo
 * 2022-global-episet.pdf - GISAID supplemental table to access 2022 global dataset
 
 Script files:
-* adjusted_rand.R - R script to compute Adjusted Rand Index
 * compareLineages.py - Python script to compare pangolin lineages to MAPLE tree
+* comparison_script_w_ami.py - Python script to calculate Adjusted Mutual Information
 * snp_scorpio-comparisons.sh - Bash script to preprocess SNP distance matrix
 * snp_scorpio-comparisons.Rmd - R script to analyze SNP distance matrix data and scorpio
-* violin_plots.R - R script to create visualization to compare genome coverage to reassignment
+* tables_and_violin_plots.R - R script to create visualization to compare genome coverage to reassignment and other tables
 * sankey_plots.R - R script to create visualization to look at lineage stability
 * Files catalogueing new lineages during the study periodbetween pangolin versions which we considered as permitted changes
   - expected.13.14.tsv
   - expected.14.15.tsv 
   - expected.15.16.tsv 
   - expected.2021-11-09_v1.2.133.tsv
+
+
+Supplemental files:
+* Supplementary_table_1.csv
+* Supplementary_table_2.csv
+* Supplementary_table_3.csv
+* Supplementary_table_4.csv
+* Supplementary_file_public_60k_pusher_nohash.html - Interactive HTML showing the lineage reassignments across different versions of pUSHER
+* Supplementary_file_public_60k_plearn_nohash.html - Interactive HTML showing the lineage reassignments across different versions of pangoLEARN
 
 
 # Authors
