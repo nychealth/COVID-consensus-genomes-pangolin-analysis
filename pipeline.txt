@@ -40,11 +40,13 @@ Alternate lineage assignment:
 -	Lineage assignment:
 	-	MAPLE:
 	Command line: pypy3 MAPLEv0.1.9.py --inputTree outputMaple_binary_tree.tree --assignmentFile ref.csv --output MAPLE019 --overwrite
+	-	NextClade:
+	Command line: nextclade --in-order --input-fasta <samples.fasta> --input-dataset /opt/nextclade_database/sars-cov-2_MN908947_2023-06-16T12\:00\:00Z/
 
 Lineage Assignment Validation:
 
--	Adjusted Rand Index:
-	Script: adjusted_rand.R
+-	Adjusted Mutual Information:
+	Script: comparison_script_w_ami.py
 
 -	Ancestral accuracy:
 	Script: compareLineages.py
@@ -58,7 +60,7 @@ Pangolin versions lineage assignment comparison (Assignment comparisons):
 
 -	Stability comparison:
 	-	Expected vs. non-expected
-	Script: violin_plots.R
+	Script: tables_and_violin_plots.R
 
 	-	Sankey Plots:
 	Script: sankey_plots.R
