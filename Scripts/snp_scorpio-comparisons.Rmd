@@ -1,0 +1,179 @@
+---
+title: "pango v usher visualization"
+output: html_notebook
+---
+
+```{r echo=TRUE}
+library(tidyr)
+library(dplyr)
+
+#Read in snp average values from the 3 datasets
+snp_avg <- read.delim("/snpmatrix_avg/pango_summary_all.txt", sep="\t", header=TRUE, stringsAsFactors = FALSE) %>% filter(Lineage != "Unassigned")
+snp_avg2 <- read.delim("2021_global/snpmatrix_avg/pango_summary.txt", sep="\t", header=TRUE, stringsAsFactors = FALSE) %>% filter(Lineage != "Unassigned")
+global_snp_avg <- read.delim("202204_global/snpmatrix_avg/pango_summary.txt", sep="\t", header=TRUE, stringsAsFactors = FALSE) %>% filter(Lineage != "Unassigned")
+
+library(ggplot2)
+
+#Renaming
+snp_avg$model <- ""
+snp_avg$model[grep("learn", snp_avg$Run)] <- "pLEARN"
+snp_avg$model[grep("usher", snp_avg$Run)] <- "pUShER"
+snp_avg$version <- ""
+snp_avg$version[grep("1", snp_avg$Run)] <- "09-17"
+snp_avg$version[grep("2", snp_avg$Run)] <- "09-28"
+snp_avg$version[grep("3", snp_avg$Run)] <- "10-18"
+snp_avg$version[grep("4", snp_avg$Run)] <- "11-09"
+snp_avg$version[grep("v4", snp_avg$Run)] <- "v4.0.2"
+
+snp_avg2$model <- ""
+snp_avg2$model[grep("pango", snp_avg2$Run)] <- "pLEARN"
+snp_avg2$model[grep("usher", snp_avg2$Run)] <- "pUShER"
+snp_avg2$version <- ""
+snp_avg2$version[grep("09_27", snp_avg2$Run)] <- "09-17"
+snp_avg2$version[grep("09_29", snp_avg2$Run)] <- "09-28"
+snp_avg2$version[grep("10_22", snp_avg2$Run)] <- "10-18"
+snp_avg2$version[grep("11_09", snp_avg2$Run)] <- "11-09"
+snp_avg2$version[grep("v4", snp_avg2$Run)] <- "v4.0.2"
+
+global_snp_avg$model <- ""
+global_snp_avg$model[grep("learn", global_snp_avg$Run)] <- "pLEARN"
+global_snp_avg$model[grep("usher", global_snp_avg$Run)] <- "pUShER"
+global_snp_avg$version <- "v4.0.2"
+
+library(ggpubr)
+snp_a <- ggplot(snp_avg, aes(x=version, y=Average, fill=model)) + geom_boxplot() + theme_classic() + ylab("Average SNP distance within a lineage") + xlab("Pangolin model version") + stat_compare_means(label = "p.signif", vjust = -1) + labs(fill='Model') + theme(legend.position = "none")
+ggsave("~/pango/figures/snpdist.png", dpi=300)
+
+#p-value = 0.07765
+wilcox.test(Average~model, filter(snp_avg, version == "09-17"))
+#p-value = 0.01954
+wilcox.test(Average~model, filter(snp_avg, version == "09-28"))
+#p-value = 0.03049
+wilcox.test(Average~model, filter(snp_avg, version == "10-18"))
+#p-value = 5.497e-06
+wilcox.test(Average~model, filter(snp_avg, version == "11-09"))
+#p-value = 0.8949
+wilcox.test(Average~model, filter(snp_avg, version == "v4.0.2"))
+
+snp_b <- ggplot(snp_avg2, aes(x=version, y=Average, fill=model)) + geom_boxplot() + theme_classic() + ylab("Average SNP distance within a lineage") + xlab("Pangolin model version") + stat_compare_means(label = "p.signif", vjust = -1) + labs(fill='Model') + theme(legend.position = "none")
+ggsave("~/pango/figures/snpdist_2021global.png", dpi=300)
+
+snp_c <- ggplot(global_snp_avg, aes(x=version, y=Average, fill=model)) + geom_boxplot() + theme_classic() + ylab("Average SNP distance within a lineage") + xlab("Pangolin model version") + stat_compare_means(label = "p.signif", vjust = -1) + labs(fill='Model') 
+ggsave("~/pango/figures/snpdist_global_v4.png", dpi=300)
+
+ggarrange(snp_a, snp_b, snp_c, labels = c("A", "B", "C"), nrow=1, ncol=3)
+
+#Read in scorpio results
+scorpio <- read.delim("scorpio_summary_all.txt", sep=",", header=TRUE, stringsAsFactors = FALSE)
+scorpio_hashoff <- scorpio[grep("hash", scorpio$File),]
+scorpio2021_v4 <- read.delim("/opt/temp/msu4/pango/ca_nyc_pangov4/2021_global/scorpio_summary.txt", sep=",", header=TRUE, stringsAsFactors = FALSE)
+scorpiov4 <- read.delim("/opt/temp/msu4/pango/ca_nyc_pangov4/202204_global/scorpio/scorpio_summary.txt", sep=",", header=TRUE, stringsAsFactors = FALSE)
+
+#Split lineages and count, and combine
+global_lineage_tbl <- list(
+    plearn1 = as.data.frame(table(strsplit(scorpio_hashoff$Lineages[1], split = " "))), 
+    plearn2 = as.data.frame(table(strsplit(scorpio_hashoff$Lineages[2], split = " "))),
+    plearn3 = as.data.frame(table(strsplit(scorpio_hashoff$Lineages[3], split = " "))),
+    plearn4 = as.data.frame(table(strsplit(scorpio_hashoff$Lineages[4], split = " "))),
+    usher1 = as.data.frame(table(strsplit(scorpio_hashoff$Lineages[5], split = " "))),
+    usher2 = as.data.frame(table(strsplit(scorpio_hashoff$Lineages[6], split = " "))),
+    usher3 = as.data.frame(table(strsplit(scorpio_hashoff$Lineages[7], split = " "))),
+    usher4 = as.data.frame(table(strsplit(scorpio_hashoff$Lineages[8], split = " "))),
+    plearnv4 = as.data.frame(table(strsplit(scorpio2021_v4$Lineages[1], split = " "))),
+    usherv4 = as.data.frame(table(strsplit(scorpio2021_v4$Lineages[2], split = " ")))
+    )
+
+local_lineage_tbl <- list(
+    plearn1 = as.data.frame(table(strsplit(scorpio_hashoff$Lineages[9], split = " "))), 
+    usher1 = as.data.frame(table(strsplit(scorpio_hashoff$Lineages[10], split = " "))),
+    plearn2 = as.data.frame(table(strsplit(scorpio_hashoff$Lineages[11], split = " "))),
+    usher2 = as.data.frame(table(strsplit(scorpio_hashoff$Lineages[12], split = " "))),
+    plearn3 = as.data.frame(table(strsplit(scorpio_hashoff$Lineages[13], split = " "))),
+    usher3 = as.data.frame(table(strsplit(scorpio_hashoff$Lineages[14], split = " "))),
+    plearn4 = as.data.frame(table(strsplit(scorpio_hashoff$Lineages[15], split = " "))),
+    usher4 = as.data.frame(table(strsplit(scorpio_hashoff$Lineages[16], split = " "))),
+    plearnv4 = as.data.frame(table(strsplit(scorpio_hashoff$Lineages[17], split = " "))),
+    usherv4 = as.data.frame(table(strsplit(scorpio_hashoff$Lineages[18], split = " ")))
+    )
+
+scorpiov4_tbl <- list(
+    plearn = as.data.frame(table(strsplit(scorpiov4$Lineages[1], split = " "))),
+    usher = as.data.frame(table(strsplit(scorpiov4$Lineages[2], split = " ")))
+    )
+
+scorpio_global_df <- rbind(cbind(local_lineage_tbl$plearn1, "version"="plearn1"),
+      cbind(global_lineage_tbl$plearn2, "version"="plearn2"),
+      cbind(global_lineage_tbl$plearn3, "version"="plearn3"),
+      cbind(global_lineage_tbl$plearn4, "version"="plearn4"),
+      cbind(global_lineage_tbl$plearnv4, "version"="plearnv4"),
+      cbind(global_lineage_tbl$usher1, "version"="usher1"),
+      cbind(global_lineage_tbl$usher2, "version"="usher2"),
+      cbind(global_lineage_tbl$usher3, "version"="usher3"),
+      cbind(global_lineage_tbl$usher4, "version"="usher4"),
+      cbind(global_lineage_tbl$usherv4, "version"="usherv4")
+)
+
+scorpio_local_df <- rbind(cbind(local_lineage_tbl$plearn1, "version"="plearn1"),
+      cbind(local_lineage_tbl$plearn2, "version"="plearn2"),
+      cbind(local_lineage_tbl$plearn3, "version"="plearn3"),
+      cbind(local_lineage_tbl$plearn4, "version"="plearn4"),
+      cbind(local_lineage_tbl$plearnv4, "version"="plearnv4"),
+      cbind(local_lineage_tbl$usher1, "version"="usher1"),
+      cbind(local_lineage_tbl$usher2, "version"="usher2"),
+      cbind(local_lineage_tbl$usher3, "version"="usher3"),
+      cbind(local_lineage_tbl$usher4, "version"="usher4"),
+      cbind(local_lineage_tbl$usherv4, "version"="usherv4")
+)
+
+scorpiov4_df <- rbind(cbind(scorpiov4_tbl$plearn, "model"="pLEARN", "version"="v4.0.2"),
+                cbind(scorpiov4_tbl$usher, "model"="pUShER", "version"="v4.0.2")
+)
+
+#Renaming
+scorpio_global_df$model <- ""
+scorpio_global_df$model[grep("plearn", scorpio_global_df$version)] <- "pLEARN"
+scorpio_global_df$model[grep("usher", scorpio_global_df$version)] <- "pUShER"
+scorpio_global_df$version2 <- ""
+scorpio_global_df$version2[grep("1", scorpio_global_df$version)] <- "09-17"
+scorpio_global_df$version2[grep("2", scorpio_global_df$version)] <- "09-28"
+scorpio_global_df$version2[grep("3", scorpio_global_df$version)] <- "10-18"
+scorpio_global_df$version2[grep("4", scorpio_global_df$version)] <- "11-09"
+
+scorpio_local_df$model <- ""
+scorpio_local_df$model[grep("plearn", scorpio_local_df$version)] <- "pLEARN"
+scorpio_local_df$model[grep("usher", scorpio_local_df$version)] <- "pUShER"
+scorpio_local_df$version2 <- ""
+scorpio_local_df$version2[grep("1", scorpio_local_df$version)] <- "09-17"
+scorpio_local_df$version2[grep("2", scorpio_local_df$version)] <- "09-28"
+scorpio_local_df$version2[grep("3", scorpio_local_df$version)] <- "10-18"
+scorpio_local_df$version2[grep("4", scorpio_local_df$version)] <- "11-09"
+scorpio_local_df$version2[grep("v4", scorpio_local_df$version)] <- "v4.0.2"
+
+scorpio_global_df2 <- filter(scorpio_global_df, !(Freq > 19)) %>% group_by(version) %>% summarise(Freq=sum(Freq)) %>% ungroup() %>% select(Freq, version) %>% cbind(Var1="Other", .) %>% rbind(filter(scorpio_global_df, Freq > 19) %>% select(Var1, Freq, version))
+scorpio_local_df2 <- filter(scorpio_local_df, !(Freq > 9)) %>% group_by(version) %>% summarise(Freq=sum(Freq)) %>% ungroup() %>% select(Freq, version) %>% cbind(Var1="Other", .) %>% rbind(filter(scorpio_local_df, Freq > 9) %>% select(Var1, Freq, version))
+
+scorpio_local_df2$model <- ""
+scorpio_local_df2$model[grep("plearn", scorpio_local_df2$version)] <- "pLEARN"
+scorpio_local_df2$model[grep("usher", scorpio_local_df2$version)] <- "pUShER"
+scorpio_local_df2$version2 <- ""
+scorpio_local_df2$version2[grep("1", scorpio_local_df2$version)] <- "09-17"
+scorpio_local_df2$version2[grep("2", scorpio_local_df2$version)] <- "09-28"
+scorpio_local_df2$version2[grep("3", scorpio_local_df2$version)] <- "10-18"
+scorpio_local_df2$version2[grep("4", scorpio_local_df2$version)] <- "11-09"
+scorpio_local_df2$version2[grep("v4", scorpio_local_df2$version)] <- "v4.0.2"
+
+scorpio_global_df2$model <- ""
+scorpio_global_df2$model[grep("plearn", scorpio_global_df2$version)] <- "pLEARN"
+scorpio_global_df2$model[grep("usher", scorpio_global_df2$version)] <- "pUShER"
+scorpio_global_df2$version2 <- ""
+scorpio_global_df2$version2[grep("1", scorpio_global_df2$version)] <- "09-17"
+scorpio_global_df2$version2[grep("2", scorpio_global_df2$version)] <- "09-28"
+scorpio_global_df2$version2[grep("3", scorpio_global_df2$version)] <- "10-18"
+scorpio_global_df2$version2[grep("4", scorpio_global_df2$version)] <- "11-09"
+scorpio_global_df2$version2[grep("v4", scorpio_global_df2$version)] <- "v4.0.2"
+
+scorpio_a <- ggplot(scorpio_local_df2, aes(fill=Var1, y=Freq, x=model)) + geom_bar(position="stack", stat="identity") + ylab("Frequency of Scorpio overrides") + xlab("Pangolin model version") + facet_grid(~ version2) + labs(fill='Original lineage call')
+scorpio_b <- ggplot(scorpio_global_df2, aes(fill=Var1, y=Freq, x=model)) + geom_bar(position="stack", stat="identity") + ylab("Frequency of Scorpio overrides") + xlab("Pangolin model version") + facet_grid(~ version2) + labs(fill='Original lineage call') 
+scorpio_c <- ggplot(scorpiov4_df, aes(fill=Var1, y=Freq, x=model)) + geom_bar(position="stack", stat="identity") + ylab("Frequency of Scorpio overrides") + xlab("Pangolin model version") + facet_grid(~ version) + labs(fill='Original lineage call')
+ggarrange(scorpio_a, scorpio_b, scorpio_c, ncol=1, labels = c("A", "B", "C"))
+```
