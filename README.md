@@ -16,7 +16,7 @@ Fasta files can be directly inputted into any software that takes multi-fasta fo
   - To uncompress with the xz-utils package, the command is `unxz nyc_passed_aug-nov2021.fasta.xz`
 * ca_nyc_mafft.alignment.fasta.xz - Compressed MSA created by MAFFT
   - To uncompress with the xz-utils package, the command is `unxz ca_nyc_mafft.alignment.fasta.xz`
-* ca_nyc.maple_tree.tree - MAPLE tree used for lineage assignment validation
+* pango_consensus_ca_nyc.aligned_sept8_2023_masked_maple034inferenceJC_noAncertaintyAssignment_reRooted_nexusTree.tree - MAPLE tree used for lineage assignment validation
 * 60k_public_meta.tsv - NCBI metadata for 2021 global dataset
 * 2022-global-episet.pdf - GISAID supplemental table to access 2022 global dataset
 
